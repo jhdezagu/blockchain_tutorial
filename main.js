@@ -1,11 +1,11 @@
 //npm install --save crypto-js
 //node main.js
 
-const SHA256 = require('crypto-js/sha256');
+import SHA256 from 'crypto-js/sha256';
 
 class Block{
     constructor(index, timestamp, data, previousHash = ''){
-        this.index = index;
+        this.index = index; //not needed in blockchain
         this.timestamp = timestamp;
         this.data = data;
         this.previousHash = previousHash;
@@ -16,9 +16,9 @@ class Block{
     calculateHash(){
         return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
     }
-    //mining - Proof-of-Work
+    //mining - Proof-of-Work - Makes sure there is only a block create after a certain amount of minutes
     mineBlock(difficulty){
-        while(this.hash.substring(0, difficulty) !== Array(difficulty +1).join("0")){
+        while(this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")){
             this.nonce++; //this is the only parameter we can change in the block
             this.hash = this.calculateHash();
         }
@@ -66,24 +66,25 @@ class Blockchain{
 }
 
 //add blocks
-let savjeeCoin = new Blockchain();
+let bitCoin = new Blockchain();
 
+//added proof-of-work
 console.log('Mining block 1...')
-savjeeCoin.addBlock(new Block(1, "10/01/2019", { amount: 4 }));
+bitCoin.addBlock(new Block(1, "10/01/2019", { amount: 4 }));
 
 console.log('Mining block 2...')
-savjeeCoin.addBlock(new Block(2, "12/01/2019", { amount: 10 }));
+bitCoin.addBlock(new Block(2, "12/01/2019", { amount: 10 }));
 
-console.log(JSON.stringify(savjeeCoin, null, 4));
+console.log(JSON.stringify(bitCoin, null, 4));
 
 //check if blockchain is valid
-console.log('Is blockchain valid? ' + savjeeCoin.isChainValid())
+console.log('Is blockchain valid? ' + bitCoin.isChainValid())
 //try to hack
-savjeeCoin.chain[1].data = { amount: 100 };
+bitCoin.chain[1].data = { amount: 100 };
 //try to recalculate the hash
-savjeeCoin.chain[1].hash = savjeeCoin.chain[1].calculateHash();
+bitCoin.chain[1].hash = bitCoin.chain[1].calculateHash();
 //check if blockchain is valid
-console.log('Is blockchain valid? ' + savjeeCoin.isChainValid())
+console.log('Is blockchain valid? ' + bitCoin.isChainValid())
 
 
 
